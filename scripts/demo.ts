@@ -3,6 +3,7 @@ import { metaMorphoVaultABI, metaMorphoVaultFactoryABI } from "../test/abi";
 import { M2N } from "./src";
 import { Wallet } from "ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import figlet from "figlet";
 
 async function main() {
   const [alice, bob, pierre] = await hre.ethers.getSigners();
@@ -14,12 +15,6 @@ async function main() {
     metaMorphoVaultFactoryABI,
     alice
   );
-
-  const isMetaMorpho = await metaMorphoVaultFactory.isMetaMorpho(
-    "0xEbFA750279dEfa89b8D99bdd145a016F6292757b"
-  );
-
-  console.log("isMetaMorpho:", isMetaMorpho);
 
   const metaMorpho = await metaMorphoVaultFactory.createMetaMorpho(
     alice.address,
@@ -39,8 +34,18 @@ async function main() {
     alice
   );
 
-  const name = await metaMorphoVault.name();
-  console.log("name:", name);
+  const metaMorphoVaultName = await metaMorphoVault.name();
+
+  figlet(metaMorphoVaultName, (err, data) => {
+    if (err) {
+      console.error("Something went wrong...", err);
+
+      return;
+    }
+
+    console.log(data);
+    console.log(`Address: ${metaMorphoVaultAddress}`);
+  });
 
   const initGuardian = await metaMorphoVault.submitGuardian(bob.address);
   await initGuardian.wait();
